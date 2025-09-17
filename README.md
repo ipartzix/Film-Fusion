@@ -41,6 +41,7 @@ https://film-fusion-001.vercel.app/
    ```bash
    git clone https://github.com/ipartzix/film-fusion.git
 
-   cd filmfusion
+   cd film-fusion
+
 
 
