@@ -22,25 +22,8 @@ It combines the power of **Google Gemini AI** and **The Movie Database (TMDB) AP
 
 ##  Demo
 
-👉 [Live Demo (if hosted on GitHub Pages / Vercel)](https://your-link-here.com)  
-
----
-
-##  Screenshots
-
-###  Search & Input
-<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/d3ddbb46-d0af-4092-94b2-6f2b97cc10e4" />
-
-
-###  Recommendations
-![Screenshot_8-9-2025_235540_127 0 0 1](https://github.com/user-attachments/assets/9b3c3f02-fde1-4508-8211-622893b23ccb)
-
-
-###  Hero Banner
-![Screenshot_8-9-2025_214623_127 0 0 1](https://github.com/user-attachments/assets/1d675445-16dd-493b-bddc-52a3f6d94540)
-
-
-
+👉 [Live Demo 
+https://film-fusion-001.vercel.app/
 
 ---
 
@@ -59,3 +42,4 @@ It combines the power of **Google Gemini AI** and **The Movie Database (TMDB) AP
    git clone https://github.com/ipartzix/filmfusion.git
 
    cd filmfusion
+
