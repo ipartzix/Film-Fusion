@@ -1,127 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FilmFusion</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-  </head>
-  <body class="p-6 bg-slate-900 text-white">
-    <!-- Title -->
-    <div class="text-center mb-8">
-      <h1 class="text-5xl font-extrabold text-purple-400">FilmFusion</h1>
-      <p class="text-gray-400 italic">
-        Not just recommendations, your perfect movie matchmaker 💜🎥
-      </p>
-    </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FilmFusion | AI Matchmaker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background-color: #0f172a; }
+    #recommendations::-webkit-scrollbar { height: 6px; }
+    #recommendations::-webkit-scrollbar-thumb { background: #6366f1; border-radius: 10px; }
 
-    <!-- Input -->
-    <div class="flex flex-col md:flex-row items-center justify-center gap-4 mb-12">
-      <input
-        id="movie-input"
-        type="text"
-        placeholder="Enter a movie..."
-        class="flex-1 w-full p-4 rounded-xl bg-gray-800 text-white"
-      />
-      <button
-        id="ai-recommend-btn"
-        class="px-8 py-4 rounded-xl font-semibold bg-gradient-to-r from-cyan-500 to-purple-600 shadow-lg"
-      >
-        Recommend
-      </button>
-    </div>
+    .movie-card {
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    .movie-card.show { opacity: 1; transform: translateY(0); }
+    .movie-card:hover { transform: scale(1.05); z-index: 10; }
 
-    <!-- Loading -->
-    <div id="loading" class="hidden text-purple-400 text-center mb-6">
-      ✨ AI is thinking...
-    </div>
+    .glass {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+  </style>
+</head>
+<body class="p-6 text-white font-sans">
 
-    <!-- Hero -->
-    <div id="hero" class="hidden mb-12 relative h-60 rounded-2xl overflow-hidden">
-      <div class="absolute bottom-6 left-6">
-        <h2 id="hero-title" class="text-3xl font-bold"></h2>
-        <p id="hero-genres" class="text-gray-300"></p>
-        <span id="hero-rating" class="bg-black bg-opacity-70 px-2 py-1 rounded text-yellow-400"></span>
-      </div>
-    </div>
+<div class="text-center mb-12">
+  <h1 class="text-6xl font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-cyan-400 mb-2">
+    FilmFusion
+  </h1>
+  <p class="text-slate-400">Discover your next favorite movie using Gemini AI</p>
+</div>
 
-    <!-- Recommendations -->
-    <h2 class="text-2xl font-bold mb-4">Recommended Movies</h2>
-    <div id="recommendations" class="flex gap-4 overflow-x-auto"></div>
+<div class="max-w-2xl mx-auto flex flex-col md:flex-row gap-4 mb-16">
+  <input
+          id="movie-input"
+          type="text"
+          placeholder="Type a movie you love..."
+          class="w-full p-4 rounded-2xl bg-slate-800/50 border border-slate-700 focus:border-indigo-500 outline-none transition-all"
+  />
+  <button
+          id="ai-recommend-btn"
+          class="px-10 py-4 rounded-2xl font-bold bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-500/20 transition-all active:scale-95"
+  >
+    Explore
+  </button>
+</div>
 
-    <script>
-      const movieInput = document.getElementById("movie-input");
-      const recommendBtn = document.getElementById("ai-recommend-btn");
-      const loading = document.getElementById("loading");
-      const recommendations = document.getElementById("recommendations");
-      const hero = document.getElementById("hero");
-      const heroTitle = document.getElementById("hero-title");
-      const heroGenres = document.getElementById("hero-genres");
-      const heroRating = document.getElementById("hero-rating");
+<div id="loading" class="hidden text-center mb-12">
+  <div class="inline-block w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+  <p class="mt-2 text-indigo-400 font-medium italic">Curating your list...</p>
+</div>
 
-      async function getAIRecommendations() {
-        const movieTitle = movieInput.value.trim();
-        if (!movieTitle) return;
+<div id="hero" class="hidden max-w-6xl mx-auto mb-16 h-[450px] rounded-[2rem] overflow-hidden relative shadow-2xl border border-white/10">
+  <div id="hero-bg" class="absolute inset-0 bg-cover bg-center"></div>
+  <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
+  <div class="absolute bottom-10 left-10 right-10">
+    <span class="px-3 py-1 bg-indigo-600 rounded-full text-[10px] font-bold uppercase tracking-widest mb-4 inline-block">Perfect Match</span>
+    <h2 id="hero-title" class="text-5xl font-bold mb-2"></h2>
+    <p id="hero-genres" class="text-slate-300 mb-4"></p>
+    <div id="hero-rating" class="text-2xl font-bold text-yellow-400"></div>
+  </div>
+</div>
 
-        recommendations.innerHTML = "";
-        loading.classList.remove("hidden");
-        hero.classList.add("hidden");
+<div class="max-w-7xl mx-auto">
+  <h2 class="text-2xl font-bold mb-8 flex items-center gap-3">
+    <span class="w-2 h-6 bg-indigo-500 rounded-full"></span>
+    Similar Recommendations
+  </h2>
+  <div id="recommendations" class="flex gap-6 overflow-x-auto pb-10 snap-x"></div>
+</div>
 
-        try {
-          // 1. Ask Gemini
-          const aiRes = await fetch("/api/movie", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ query: movieTitle }),
-          });
-          const aiMovies = await aiRes.json();
+<script>
+  const movieInput = document.getElementById("movie-input");
+  const recommendBtn = document.getElementById("ai-recommend-btn");
+  const loading = document.getElementById("loading");
+  const recommendations = document.getElementById("recommendations");
+  const hero = document.getElementById("hero");
+  const heroBg = document.getElementById("hero-bg");
+  const heroTitle = document.getElementById("hero-title");
+  const heroGenres = document.getElementById("hero-genres");
+  const heroRating = document.getElementById("hero-rating");
 
-          let firstMovieSet = false;
+  async function getAIRecommendations() {
+    const query = movieInput.value.trim();
+    if (!query) return;
 
-          for (const m of aiMovies) {
-            // 2. Get TMDB details
-            const searchRes = await fetch(`/api/search?title=${encodeURIComponent(m.title)}`);
-            const movie = await searchRes.json();
+    recommendations.innerHTML = "";
+    loading.classList.remove("hidden");
+    hero.classList.add("hidden");
 
-            if (!movie) continue;
-
-            const poster = movie.poster_path
-              ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-              : "https://via.placeholder.com/300x450?text=No+Poster";
-            const rating = movie.vote_average ? movie.vote_average.toFixed(1) : "N/A";
-            const genreNames = (movie.genre_names || []).join(", ");
-
-            if (!firstMovieSet) {
-              hero.style.backgroundImage = `url(https://image.tmdb.org/t/p/original${movie.backdrop_path})`;
-              heroTitle.textContent = movie.title;
-              heroGenres.textContent = genreNames;
-              heroRating.textContent = `⭐ ${rating}/10`;
-              hero.classList.remove("hidden");
-              firstMovieSet = true;
-            }
-
-            const card = document.createElement("div");
-            card.className = "min-w-[200px] max-w-[220px] bg-slate-800 rounded-xl p-3";
-            card.innerHTML = `
-              <img src="${poster}" class="w-full h-72 object-cover rounded-lg mb-2">
-              <h3 class="font-bold">${movie.title}</h3>
-              <p class="text-sm text-gray-400">${genreNames}</p>
-              <span class="text-yellow-400">⭐ ${rating}/10</span>
-            `;
-            recommendations.appendChild(card);
-          }
-        } catch (err) {
-          console.error(err);
-          recommendations.innerHTML = `<p class="text-red-400">❌ Something went wrong.</p>`;
-        } finally {
-          loading.classList.add("hidden");
-        }
-      }
-
-      recommendBtn.addEventListener("click", getAIRecommendations);
-      movieInput.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") getAIRecommendations();
+    try {
+      const res = await fetch("/api/movie", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query }),
       });
-    </script>
-  </body>
+      const aiMovies = await res.json();
+
+      let firstSet = false;
+
+      for (let i = 0; i < aiMovies.length; i++) {
+        const searchRes = await fetch(`/api/search?title=${encodeURIComponent(aiMovies[i].title)}`);
+        const movie = await searchRes.json();
+        if (!movie) continue;
+
+        const poster = movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : "https://via.placeholder.com/300x450";
+        const rating = movie.vote_average ? movie.vote_average.toFixed(1) : "N/A";
+        const genres = (movie.genre_names || []).join(" • ");
+
+        // Set Hero with first result
+        if (!firstSet) {
+          heroBg.style.backgroundImage = `url(https://image.tmdb.org/t/p/original${movie.backdrop_path})`;
+          heroTitle.textContent = movie.title;
+          heroGenres.textContent = genres;
+          heroRating.textContent = `⭐ ${rating} / 10`;
+          hero.classList.remove("hidden");
+          firstSet = true;
+        }
+
+        // Create Card
+        const card = document.createElement("div");
+        card.className = "movie-card min-w-[240px] snap-start glass rounded-3xl p-4";
+        card.style.transitionDelay = `${i * 100}ms`;
+
+        card.innerHTML = `
+              <img src="${poster}" class="w-full h-72 object-cover rounded-2xl mb-4 shadow-lg">
+              <h3 class="font-bold text-lg truncate">${movie.title}</h3>
+              <p class="text-xs text-slate-400 mb-2">${genres}</p>
+              <div class="flex items-center justify-between">
+                <span class="text-yellow-400 text-sm font-bold">⭐ ${rating}</span>
+                <span class="text-[10px] text-slate-500">${movie.release_date?.split('-')[0] || ''}</span>
+              </div>
+            `;
+        recommendations.appendChild(card);
+        setTimeout(() => card.classList.add('show'), 50);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      loading.classList.add("hidden");
+    }
+  }
+
+  recommendBtn.addEventListener("click", getAIRecommendations);
+</script>
+</body>
 </html>
